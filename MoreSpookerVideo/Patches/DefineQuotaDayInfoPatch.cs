@@ -22,14 +22,8 @@ namespace MoreSpookerVideo.Patches
 
             if (initRoomStats)
             {
-                MoreSpookerVideo.Logger?.LogInfo("Quota is init by player config!");
-
                 MoreSpookerVideo.Logger?.LogInfo($"You have {startMoney}$ in start game!");
                 MoreSpookerVideo.Logger?.LogInfo($"You have {startQuotaToReachToReach} quota to reach!");
-            }
-            else
-            {
-                MoreSpookerVideo.Logger?.LogInfo("Quota by default in game!");
             }
         }
 

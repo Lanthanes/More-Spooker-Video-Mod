@@ -30,7 +30,7 @@ namespace MoreSpookerVideo
             Logger = base.Logger;
             Instance = this;
 
-            CameraPrice = Config.Bind("General", "CameraPrice", 100, "The price of camera in shop");
+            CameraPrice = Config.Bind("General", "CameraPrice", 100, "The price of camera in shop (-1 = default ingame price)");
             CameraTimeMultiplier = Config.Bind("General", "CameraTimeMultiplier", 0,
                 "Multiplier of camera times (0 = default ingame value, -1 = infinite time)");
             ViewRateMultiplier = Config.Bind("General", "ViewRateMultiplier", 0f,
@@ -98,7 +98,7 @@ namespace MoreSpookerVideo
                     Logger?.LogInfo($"{item.displayName} added to {item.Category} shop!");
                 }
 
-                if (ChangePriceOfItem!.Value != 1f)
+                if (ChangePriceOfItem!.Value != -1f)
                 {
                     item.price = UnityEngine.Mathf.FloorToInt(item.price * ChangePriceOfItem!.Value);
                 }
