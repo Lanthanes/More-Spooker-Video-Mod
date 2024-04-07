@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.6] - 07/04/2024
+
+### Changed
+- Update of readme/manifest
+
 ## [1.0.5] - 07/04/2024
 
 ### Added
