@@ -1,7 +1,7 @@
 # More Spooker Video
 
 *A mod adding camera video in shop. You can also activate all the items and make it all free (in config file). 
-You can also increase the camera recording time and increase the number of views to reach per quota.*
+You can set the starting currency, or even increase the camera recording time and increase the number of views to reach per quota.*
 
 ## Notes
 - Required by all players to work properly!
