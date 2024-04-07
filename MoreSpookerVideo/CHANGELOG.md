@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.5] - 07/04/2024
+
+### Added
+- You can unlock all items in shop in config file
+- You can change price for all items in config file
+- You can define multiplier for duration camera in config file
+- You can define multiplier for number of view per quota in config file
+- You can define start money
+
 ## [1.0.4] - 05/04/2024
 
 ### Changed
@@ -18,7 +27,7 @@
 ## [1.0.1] - 04/04/2024
 
 ### Changed
-- Update price to 50$
+- Update price to 100$
 
 ## [1.0.0] - 04/04/2024
 
