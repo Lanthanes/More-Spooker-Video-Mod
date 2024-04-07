@@ -3,20 +3,20 @@ using HarmonyLib;
 
 namespace MoreSpookerVideo.Patches
 {
-    [HarmonyPatch(typeof(RoomStatsHolder), MethodType.Constructor, new Type[] { typeof(SurfaceNetworkHandler), typeof(int), typeof(int), typeof(int) })]
+    [HarmonyPatch(typeof(RoomStatsHolder))]
     internal class DefineQuotaDayInfoPatch
     {
-        static void Prefix(ref int startMoney, ref int startQuotaToReachToReach)
+        [HarmonyPatch(MethodType.Constructor, new Type[] { typeof(SurfaceNetworkHandler), typeof(int), typeof(int), typeof(int) })]
+        [HarmonyPrefix]
+        static void RoomStatsHolderCtorPrefix(ref int startMoney, ref int startQuotaToReachToReach)
         {
-            // TODO check load or other data ???
-
             startMoney = MoreSpookerVideo.StartMoney!.Value;
 
             bool initRoomStats = MoreSpookerVideo.StartMoney!.Value > 0;
 
             if (MoreSpookerVideo.ViewRateMultiplier!.Value > 0)
             {
-                startQuotaToReachToReach *= MoreSpookerVideo.ViewRateMultiplier!.Value;
+                startQuotaToReachToReach = UnityEngine.Mathf.FloorToInt(startQuotaToReachToReach * MoreSpookerVideo.ViewRateMultiplier!.Value);
                 initRoomStats = true;
             }
 
@@ -31,6 +31,18 @@ namespace MoreSpookerVideo.Patches
             {
                 MoreSpookerVideo.Logger?.LogInfo("Quota by default in game!");
             }
+        }
+
+        [HarmonyPatch(nameof(RoomStatsHolder.CalculateNewQuota))]
+        [HarmonyPostfix]
+        static void CalculateNewQuotaPostfix(RoomStatsHolder __instance, ref int ___m_quotaToReachInternal)
+        {
+            if (MoreSpookerVideo.ViewRateMultiplier!.Value > 0)
+            {
+                ___m_quotaToReachInternal = UnityEngine.Mathf.FloorToInt(__instance.QuotaToReach * MoreSpookerVideo.ViewRateMultiplier!.Value);
+            }
+
+            MoreSpookerVideo.Logger?.LogInfo($"You have {___m_quotaToReachInternal} quota to reach!");
         }
     }
 }
