@@ -4,7 +4,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using Zorro.Core;
 
 namespace MoreSpookerVideo
 {
@@ -16,17 +16,34 @@ namespace MoreSpookerVideo
         internal static Harmony? Harmony { get; set; }
 
         internal static ConfigEntry<int>? CameraPrice { get; private set; }
+        internal static ConfigEntry<float>? CameraTimeMultiplier { get; private set; }
+        internal static ConfigEntry<int>? ViewRateMultiplier { get; private set; }
+        internal static ConfigEntry<int>? DayPerQuota { get; private set; }
+        internal static ConfigEntry<int>? StartMoney { get; private set; }
+        internal static ConfigEntry<bool>? EnabledAllItem { get; private set; }
+        internal static ConfigEntry<bool>? AllItemFree { get; private set; }
 
-        public static List<Item> AllItems => Resources.FindObjectsOfTypeAll<Item>().Concat(FindObjectsByType<Item>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToList();
+        public static List<Item> AllItems => ((DatabaseAsset<ItemDatabase, Item>) (object) SingletonAsset<ItemDatabase>.Instance).Objects.ToList(); // Resources.FindObjectsOfTypeAll<Item>().Concat(FindObjectsByType<Item>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToList();
 
         private void Awake()
         {
             Logger = base.Logger;
             Instance = this;
 
-            CameraPrice = Config.Bind("General", "CameraPrice", 50, "The price of camera in shop");
+            CameraPrice = Config.Bind("General", "CameraPrice", 100, "The price of camera in shop");
+            CameraTimeMultiplier = Config.Bind("General", "CameraTimeMultiplier", 0f,
+                "Multiplier of camera times (0 = default ingame value, -1 = infinite time)");
+            ViewRateMultiplier = Config.Bind("General", "ViewRateMultiplier", 0,
+                "Multiplier of view rates (0 = default ingame value)");
+            DayPerQuota = Config.Bind("General", "DayPerQuota", 0,
+                "Define day per quota (0 = default ingame value)");
+            EnabledAllItem = Config.Bind("General", "EnabledAllItem", false,
+                "Unlock all game items (default false)");
+            StartMoney = Config.Bind("General", "StartMoney", 0,
+                "Define money in start of game party");
+            AllItemFree = Config.Bind("General", "AllItemFree", false,
+                "Make all items free (default false)");
 
-            AddShopItem();
             Patch();
 
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
@@ -41,24 +58,6 @@ namespace MoreSpookerVideo
             Harmony.PatchAll();
 
             Logger.LogDebug("Finished patching!");
-        }
-
-        private void AddShopItem()
-        {
-            Item? item = AllItems.FirstOrDefault(item => item.itemType.Equals(Item.ItemType.Camera) && item.displayName.ToLower().StartsWith("camera"));
-            
-            if (item != null)
-            {
-                item.purchasable = true;
-                item.price = CameraPrice!.Value;
-                item.quantity = 1;
-                item.Category = ShopItemCategory.Gadgets;
-
-                Logger?.LogWarning($"{item.displayName} added to shop for {item.price}$ !");
-                return;
-            }
-
-            Logger?.LogWarning("No item catched for shop...");
         }
     }
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.5] - 07/04/2024
+
+### Changed
+- 
+
+### Added
+- 
+
 ## [1.0.4] - 05/04/2024
 
 ### Changed
@@ -18,7 +26,7 @@
 ## [1.0.1] - 04/04/2024
 
 ### Changed
-- Update price to 50$
+- Update price to 100$
 
 ## [1.0.0] - 04/04/2024
 
