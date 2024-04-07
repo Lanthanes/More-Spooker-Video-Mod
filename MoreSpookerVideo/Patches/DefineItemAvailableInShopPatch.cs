@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
+using MoreSpookerVideo.Networks;
 using Photon.Pun;
 using System.Linq;
+using UnityEngine;
 
 namespace MoreSpookerVideo.Patches
 {
@@ -9,13 +11,15 @@ namespace MoreSpookerVideo.Patches
     {
         [HarmonyPatch("InitShop")]
         [HarmonyPrefix]
-        private static void OnInitShopPrefix()
+        private static void OnInitShopPrefix(ShopHandler __instance)
         {
             if (!PhotonNetwork.IsMasterClient)
             {
-                MoreSpookerVideo.Logger?.LogError("Client got this call, not supported!");
+                MoreSpookerVideo.Logger?.LogWarning("Client got this call, not supported!");
                 return;
             }
+
+            InitNetworkManager();
 
             Item? defaultItem = MoreSpookerVideo.AllItems.FirstOrDefault(item => item.name.ToLower().Equals("disc"));
 
@@ -36,7 +40,17 @@ namespace MoreSpookerVideo.Patches
                     item.Category = (item.Category.Equals(ShopItemCategory.Invalid) ? ShopItemCategory.Misc : item.Category);
                     item.purchasable = true;
 
-                    MoreSpookerVideo.Logger?.LogWarning($"Item {item.displayName} has unlocked! ({item.Category})");
+                    MoreSpookerVideo.Logger?.LogInfo($"Item {item.displayName} has unlocked! ({item.Category})");
+                }
+
+                // select playable camera, not broken !!!
+                if (item.itemType.Equals(Item.ItemType.Camera) && item.name.ToLower().Equals("camera"))
+                {
+                    item.purchasable = true;
+                    item.price = MoreSpookerVideo.CameraPrice!.Value;
+                    item.Category = ShopItemCategory.Gadgets;
+
+                    MoreSpookerVideo.Logger?.LogInfo($"{item.displayName} added to {item.Category} shop!");
                 }
 
                 if (MoreSpookerVideo.AllItemFree!.Value)
@@ -44,28 +58,27 @@ namespace MoreSpookerVideo.Patches
                     item.price = 0;
                 }
             });
+        }
 
-            // select playable camera, not broken !!!
-            Item? item = MoreSpookerVideo.AllItems.FirstOrDefault(item => item.itemType.Equals(Item.ItemType.Camera) && item.name.ToLower().Equals("camera"));
+        private static void InitNetworkManager()
+        {
+            MoreSpookerVideo.Logger.LogDebug($"InitNetworkManager {PhotonNetwork.IsMasterClient}");
 
-            if (item != null)
+            if (PhotonNetwork.IsMasterClient)
             {
-                item.purchasable = true;
-                item.price = MoreSpookerVideo.CameraPrice!.Value;
-                item.Category = ShopItemCategory.Gadgets;
+                GameObject networkManagerGameObject = new GameObject("MoreSpookerVideoNetworkManager");
+                networkManagerGameObject.AddComponent<NetworkManager>();
+                networkManagerGameObject.AddComponent<PhotonView>();
 
-                if (MoreSpookerVideo.AllItemFree!.Value)
-                {
-                    item.price = 0;
-                }
-                else
-                {
-                    MoreSpookerVideo.Logger?.LogInfo($"{item.displayName} added to shop for {item.price}$ !");
-                }
+                GameObject.DontDestroyOnLoad(networkManagerGameObject);
+
+                PhotonNetwork.Instantiate(networkManagerGameObject.name, Vector3.zero, Quaternion.identity);
+
+                MoreSpookerVideo.Logger.LogDebug("NetworkManager is create!");
             }
             else
             {
-                MoreSpookerVideo.Logger?.LogWarning("No item catched for shop...");
+                MoreSpookerVideo.Logger.LogWarning("Only server can instantiate NetworkManager object!");
             }
         }
     }

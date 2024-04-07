@@ -2,11 +2,12 @@
 
 ## [1.0.5] - 07/04/2024
 
-### Changed
-- 
-
 ### Added
-- 
+- You can unlock all items in shop in config file
+- You can define (or not) all items are free in config file
+- You can define multiplier for duration camera in config file
+- You can define multiplier for number of view per quota in config file
+- You can define start money
 
 ## [1.0.4] - 05/04/2024
 
