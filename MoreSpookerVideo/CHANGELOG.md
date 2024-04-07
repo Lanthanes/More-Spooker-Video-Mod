@@ -4,7 +4,7 @@
 
 ### Added
 - You can unlock all items in shop in config file
-- You can define (or not) all items are free in config file
+- You can change price for all items in config file
 - You can define multiplier for duration camera in config file
 - You can define multiplier for number of view per quota in config file
 - You can define start money

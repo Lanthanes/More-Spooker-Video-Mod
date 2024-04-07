@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using MoreSpookerVideo.Networks;
 using Photon.Pun;
 using System.Linq;
 using UnityEngine;
@@ -11,15 +10,13 @@ namespace MoreSpookerVideo.Patches
     {
         [HarmonyPatch("InitShop")]
         [HarmonyPrefix]
-        private static void OnInitShopPrefix(ShopHandler __instance)
+        private static void OnInitShopPrefix()
         {
             if (!PhotonNetwork.IsMasterClient)
             {
                 MoreSpookerVideo.Logger?.LogWarning("Client got this call, not supported!");
                 return;
             }
-
-            InitNetworkManager();
 
             Item? defaultItem = MoreSpookerVideo.AllItems.FirstOrDefault(item => item.name.ToLower().Equals("disc"));
 
@@ -53,33 +50,11 @@ namespace MoreSpookerVideo.Patches
                     MoreSpookerVideo.Logger?.LogInfo($"{item.displayName} added to {item.Category} shop!");
                 }
 
-                if (MoreSpookerVideo.AllItemFree!.Value)
+                if (MoreSpookerVideo.ChangePriceOfItem!.Value != 1f)
                 {
-                    item.price = 0;
+                    item.price = Mathf.FloorToInt(item.price * MoreSpookerVideo.ChangePriceOfItem!.Value);
                 }
             });
-        }
-
-        private static void InitNetworkManager()
-        {
-            MoreSpookerVideo.Logger.LogDebug($"InitNetworkManager {PhotonNetwork.IsMasterClient}");
-
-            if (PhotonNetwork.IsMasterClient)
-            {
-                GameObject networkManagerGameObject = new GameObject("MoreSpookerVideoNetworkManager");
-                networkManagerGameObject.AddComponent<NetworkManager>();
-                networkManagerGameObject.AddComponent<PhotonView>();
-
-                GameObject.DontDestroyOnLoad(networkManagerGameObject);
-
-                PhotonNetwork.Instantiate(networkManagerGameObject.name, Vector3.zero, Quaternion.identity);
-
-                MoreSpookerVideo.Logger.LogDebug("NetworkManager is create!");
-            }
-            else
-            {
-                MoreSpookerVideo.Logger.LogWarning("Only server can instantiate NetworkManager object!");
-            }
         }
     }
 }

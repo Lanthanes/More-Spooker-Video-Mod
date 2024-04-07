@@ -2,8 +2,6 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
-using MoreSpookerVideo.Networks;
-using Photon.Pun;
 using System.Collections.Generic;
 using System.Linq;
 using Zorro.Core;
@@ -23,9 +21,7 @@ namespace MoreSpookerVideo
         internal static ConfigEntry<int>? ViewRateMultiplier { get; private set; }
         internal static ConfigEntry<int>? StartMoney { get; private set; }
         internal static ConfigEntry<bool>? EnabledAllItem { get; private set; }
-        internal static ConfigEntry<bool>? AllItemFree { get; private set; }
-
-        public static CustomPrefabPool? CustomPrefabPool;
+        internal static ConfigEntry<float>? ChangePriceOfItem { get; private set; }
 
         public static List<Item> AllItems => ((DatabaseAsset<ItemDatabase, Item>) (object) SingletonAsset<ItemDatabase>.Instance).Objects.ToList(); // Resources.FindObjectsOfTypeAll<Item>().Concat(FindObjectsByType<Item>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToList();
 
@@ -43,17 +39,12 @@ namespace MoreSpookerVideo
                 "Unlock all game items (default false)");
             StartMoney = Config.Bind("General", "StartMoney", 0,
                 "Define money in start of game party");
-            AllItemFree = Config.Bind("General", "AllItemFree", false,
-                "Make all items free (default false)");
+            ChangePriceOfItem = Config.Bind("General", "ChangePriceOfItem", 1f,
+                "Change price value of item (1 = default ingame value, 0 = free item)");
 
             Patch();
 
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
-        }
-
-        private void Start()
-        {
-            PhotonNetwork.PrefabPool = CustomPrefabPool;
         }
 
         internal static void Patch()

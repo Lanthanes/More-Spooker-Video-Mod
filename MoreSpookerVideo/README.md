@@ -1,11 +1,12 @@
 # More Spooker Video
 
-*A mod adding camera video in shop. You can also activate all the items and make it all free (in config file)*
+*A mod adding camera video in shop. You can also activate all the items and make it all free (in config file). 
+You can also increase the camera recording time and increase the number of views to reach per quota.*
 
 ## Notes
 - Required by all players to work properly!
 - In fact the client is not required to download the mod for it to work, but only the host will have control over the prices of items. 
-The mod is necessary for the client if they also want to purchase items (and right price).
+The mod is necessary for the client if they also want to purchase items.
 - You can edit the settings either from the config file or from the 'edit config' tab on Thunderstore once a profile is selected.
 
 ## Requirements
