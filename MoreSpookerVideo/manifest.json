@@ -1,8 +1,8 @@
 {
   "name": "MoreSpookerVideo",
-  "version_number": "1.0.5",
+  "version_number": "1.0.6",
   "website_url": "https://github.com/Lanthanes/More-Spooker-Video-Mod",
-  "description": "A mod adding camera video in gadgets shop",
+  "description": "A mod adding camera video in shop. You can also activate all the items and make it all free (in config file). You can set the starting currency, or even increase the camera recording time and increase the number of views to reach per quota.",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"
   ]

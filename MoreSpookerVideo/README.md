@@ -16,4 +16,3 @@ The mod is necessary for the client if they also want to purchase items.
 - When uploading your film, it's possible that the end interface might appear. 
 Refreshing the playback of the film unlocks it in most cases. The view count is still added to the total!
 - When you enable unlocking all items, there are certain tabs where the list is too long and extends beyond the screen (no scrollbar).
-- Start money no effect in first day !!!
