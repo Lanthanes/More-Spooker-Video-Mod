@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Zorro.Core;
 
 namespace MoreSpookerVideo
@@ -23,7 +24,8 @@ namespace MoreSpookerVideo
         internal static ConfigEntry<bool>? EnabledAllItem { get; private set; }
         internal static ConfigEntry<float>? ChangePriceOfItem { get; private set; }
 
-        public static List<Item> AllItems => ((DatabaseAsset<ItemDatabase, Item>) (object) SingletonAsset<ItemDatabase>.Instance).Objects.ToList(); // Resources.FindObjectsOfTypeAll<Item>().Concat(FindObjectsByType<Item>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToList();
+        public static List<Item> AllBasicItems => Resources.FindObjectsOfTypeAll<Item>().ToList();
+        public static List<Item> AllItems => SingletonAsset<ItemDatabase>.Instance.Objects.ToList();
 
         private void Awake()
         {
@@ -49,7 +51,7 @@ namespace MoreSpookerVideo
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
         }
 
-        internal static void Patch()
+        private void Patch()
         {
             Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
 
@@ -60,17 +62,26 @@ namespace MoreSpookerVideo
             Logger.LogDebug("Finished patching!");
         }
 
-        internal static void AddShopItem()
+        private void AddShopItem()
         {
-            Item? defaultItem = AllItems.FirstOrDefault(item => item.name.ToLower().Equals("disc"));
-
-            AllItems.ForEach(item =>
+            if (EnabledAllItem!.Value)
             {
-                if (EnabledAllItem!.Value)
+                Item? defaultItem = AllItems.FirstOrDefault(item => item.name.ToLower().Equals("disc"));
+
+                AllItems.ForEach(item =>
                 {
                     if (item.displayName == null || item.displayName.Equals(""))
                     {
                         item.displayName = item.name;
+                    }
+
+                    ConfigEntry<bool>? enabledItem = null;
+                    bool itemHasCamera = item.itemType.Equals(Item.ItemType.Camera) && item.name.ToLower().Equals("camera");
+
+                    if (!item.purchasable && !itemHasCamera)
+                    {
+                        enabledItem = Config.Bind("Item", item.name.Replace(" ", "").Trim(), false,
+                            $"Enabled/Disabled item '{item.displayName}' (default false, Only when the 'enable all items' option is active)");
                     }
 
                     if (item.icon == null || item.icon.Equals(""))
@@ -78,31 +89,47 @@ namespace MoreSpookerVideo
                         item.icon = defaultItem.icon;
                     }
 
-                    item.Category = (item.Category.Equals(ShopItemCategory.Invalid) ? ShopItemCategory.Misc : item.Category);
-                    item.purchasable = true;
-
-                    Logger?.LogInfo($"Item {item.displayName} has unlocked! ({item.Category})");
-                }
-
-                // select playable camera, not broken !!!
-                if (item.itemType.Equals(Item.ItemType.Camera) && item.name.ToLower().Equals("camera"))
-                {
-                    item.purchasable = true;
-                    item.Category = ShopItemCategory.Gadgets;
-
-                    if (CameraPrice!.Value >= 0)
+                    if (itemHasCamera)
                     {
-                        item.price = CameraPrice!.Value;
+                        item.Category = ShopItemCategory.Gadgets;
+                    }
+                    else
+                    {
+                        item.Category = (item.Category.Equals(ShopItemCategory.Invalid) ? ShopItemCategory.Misc : item.Category);
                     }
 
-                    Logger?.LogInfo($"{item.displayName} added to {item.Category} shop!");
-                }
+                    item.purchasable = (enabledItem == null || enabledItem!.Value);
 
-                if (ChangePriceOfItem!.Value != -1f)
+                    if (ChangePriceOfItem!.Value != -1f)
+                    {
+                        item.price = Mathf.FloorToInt(item.price * ChangePriceOfItem!.Value);
+                    }
+
+                    Logger?.LogInfo($"Item {item.displayName} has unlocked to {item.price}$ ! ({item.Category})");
+                });
+            }
+            else
+            {
+                // select playable camera, not broken !!!
+                Item cameraItem = AllBasicItems.FirstOrDefault(i => i.itemType.Equals(Item.ItemType.Camera) && i.name.ToLower().Equals("camera"));
+
+                if (cameraItem)
                 {
-                    item.price = UnityEngine.Mathf.FloorToInt(item.price * ChangePriceOfItem!.Value);
+                    cameraItem.purchasable = true;
+                    cameraItem.Category = ShopItemCategory.Gadgets;
+
+                    if (ChangePriceOfItem!.Value != -1f)
+                    {
+                        cameraItem.price = Mathf.FloorToInt(cameraItem.price * ChangePriceOfItem!.Value);
+                    }
+                    else if (CameraPrice!.Value >= 0)
+                    {
+                        cameraItem.price = CameraPrice!.Value;
+                    }
+
+                    Logger?.LogInfo($"{cameraItem.displayName} added to {cameraItem.Category} shop to {cameraItem.price}$ !");
                 }
-            });
+            }
         }
     }
 }

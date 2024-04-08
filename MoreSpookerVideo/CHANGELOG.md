@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.7] - 08/04/2024
+
+### Changed
+- You can now enable/disable items from the configuration file when the 'Unlock all items' option is active (default disable).
+- A bug was causing the game to crash during the processing of items (such as the camera). I was unable to fix the bug, but now it will only occur if you decide to unlock all the items.
+
 ## [1.0.6] - 07/04/2024
 
 ### Changed
@@ -8,11 +14,11 @@
 ## [1.0.5] - 07/04/2024
 
 ### Added
-- You can unlock all items in shop in config file
-- You can change price for all items in config file
-- You can define multiplier for duration camera in config file
-- You can define multiplier for number of view per quota in config file
-- You can define start money
+- You can unlock all items in shop from the configuration file
+- You can change price for all items from the configuration file
+- You can define multiplier for duration camera from the configuration file
+- You can define multiplier for number of view per quota from the configuration file
+- You can define start money from the configuration file
 
 ## [1.0.4] - 05/04/2024
 
