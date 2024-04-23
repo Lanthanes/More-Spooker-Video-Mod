@@ -98,9 +98,13 @@ namespace MoreSpookerVideo
                         item.Category = (item.Category.Equals(ShopItemCategory.Invalid) ? ShopItemCategory.Misc : item.Category);
                     }
 
-                    item.purchasable = (enabledItem == null || enabledItem!.Value);
-
-                    if (ChangePriceOfItem!.Value != -1f)
+                    item.purchasable = (enabledItem == null || enabledItem!.Value || itemHasCamera);
+                    
+                    if (itemHasCamera)
+                    {
+                        item.price = CameraPrice!.Value;
+                    }
+                    else if (ChangePriceOfItem!.Value != -1f)
                     {
                         item.price = Mathf.FloorToInt(item.price * ChangePriceOfItem!.Value);
                     }
@@ -118,7 +122,7 @@ namespace MoreSpookerVideo
                     cameraItem.purchasable = true;
                     cameraItem.Category = ShopItemCategory.Gadgets;
 
-                    if (ChangePriceOfItem!.Value != -1f)
+                    if (ChangePriceOfItem!.Value == -1f)
                     {
                         cameraItem.price = Mathf.FloorToInt(cameraItem.price * ChangePriceOfItem!.Value);
                     }
